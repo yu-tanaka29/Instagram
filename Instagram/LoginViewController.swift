@@ -16,12 +16,23 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var displayNameTextField: UITextField!
     
-// MARK: - Life Cycle
+    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var addAcountButton: UIButton!
+    
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        mailAddressTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        displayNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        
+        loginButton.isEnabled = false
+        addAcountButton.isEnabled = false
     }
     
-// MARK: - IBAction
+    // MARK: - IBAction
     
     /// ログインボタンをタップしたときに呼ばれるメソッド
     /// 
@@ -29,14 +40,6 @@ class LoginViewController: UIViewController {
     @IBAction func handleLoginButton(_ sender: UIButton) {
         // アンラップできた = 箱がある
         if let address = self.mailAddressTextField.text, let password = self.passwordTextField.text {
-
-            // アドレスとパスワード名のいずれかでも入力されていない時は何もしない
-            if address.isEmpty || password.isEmpty {
-                print("DEBUG_PRINT: 何かが空文字です。")
-                SVProgressHUD.showError(withStatus: "必要項目を入力して下さい")
-                return
-            }
-            
             // HUDで処理中を表示
             SVProgressHUD.show()
 
@@ -63,14 +66,6 @@ class LoginViewController: UIViewController {
     /// - Parameter sender: UIButton
     @IBAction func handleCreateAccountButton(_ sender: UIButton) {
         if let address = self.mailAddressTextField.text, let password = self.passwordTextField.text, let displayName = self.displayNameTextField.text {
-            
-            // アドレスとパスワードと表示名のいずれかでも入力されていない時は何もしない(バリデーション)
-            if address.isEmpty || password.isEmpty || displayName.isEmpty {
-                print("DEBUG_PRINT: 何かが空文字です。")
-                SVProgressHUD.showError(withStatus: "必要項目を入力して下さい")
-                return
-            }
-            
             // HUDで処理中を表示
             SVProgressHUD.show()
             
@@ -105,6 +100,31 @@ class LoginViewController: UIViewController {
                         self.dismiss(animated: true, completion: nil)
                     }
                 }
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
+    @objc private func textFieldDidChange(sender: UITextField) {
+        // ログインの入力チェック
+        if let address = self.mailAddressTextField.text, let password = self.passwordTextField.text {
+
+            // アドレスとパスワード6文字以上入力されていない場合はボタンを押せなくする
+            if !address.isEmpty && password.count >= 6 {
+                loginButton.isEnabled = true
+            } else {
+                loginButton.isEnabled = false
+            }
+        }
+        
+        // アカウント作成の入力チェック
+        if let address = self.mailAddressTextField.text, let password = self.passwordTextField.text, let displayName = self.displayNameTextField.text {
+            
+            // // アドレスとパスワード6文字以上と表示名が入力されていない場合はボタンを押せなくする
+            if !address.isEmpty && password.count >= 6 && !displayName.isEmpty {
+                addAcountButton.isEnabled = true
+            } else {
+                addAcountButton.isEnabled = false
             }
         }
     }
