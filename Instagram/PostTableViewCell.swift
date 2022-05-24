@@ -101,10 +101,8 @@ class PostTableViewCell: UITableViewCell {
         // コメント一覧画面のボタンの非表示
         if postData.comments.count < 3 {
             self.detailButton.isHidden = true
-            self.detailButtonConstraint.constant = 0
         } else {
             self.detailButton.isHidden = false
-            self.detailButtonConstraint.constant = 30
         }
         
         // コメント内容表示
